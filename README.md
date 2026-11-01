@@ -61,3 +61,24 @@ The Vercel project must also have the `TMDB_READ_ACCESS_TOKEN` environment varia
 5. Extract the ZIP and install `app-debug.apk` on your Android phone. Android may ask you to allow installation from that source.
 
 The APK is an unsigned debug build for personal testing, not a Play Store release.
+
+## Accounts and cloud sync (Supabase)
+
+CineTrack supports email/password and Google sign-in, profile display-name editing, and per-user library sync across devices.
+
+### One-time Supabase setup
+
+1. Create a project at https://supabase.com.
+2. In **Project Settings → API**, copy the Project URL and the publishable/anon key.
+3. In **SQL Editor**, run the complete script in `supabase/schema.sql`. Row Level Security ensures each signed-in user can access only their own library.
+4. In **Vercel → Project → Settings → Environment Variables**, add:
+   - `VITE_SUPABASE_URL` = your Supabase Project URL
+   - `VITE_SUPABASE_ANON_KEY` = your Supabase publishable/anon key
+   Keep the existing `TMDB_READ_ACCESS_TOKEN` server-side as it is.
+5. In **GitHub → Repository → Settings → Secrets and variables → Actions → Variables**, add the same two variables (`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`) so Android APK builds include the Supabase client configuration.
+6. In **Supabase → Authentication → URL Configuration**, set the deployed Vercel site as the Site URL and add the deployed site URL plus `https://localhost` to the Redirect URLs allow-list. Configure Google as a provider under **Authentication → Providers → Google** using credentials from Google Cloud Console.
+7. Redeploy Vercel and build a fresh Android APK from GitHub Actions.
+
+The Supabase publishable/anon key is intended for client use; database access is protected by the RLS policies in `supabase/schema.sql`. Never put a Supabase service-role key in the frontend. If email confirmation is enabled, new users must confirm their email before logging in.
+
+Existing browser library data is imported into the first signed-in account when that account has no cloud library yet. After signing in, each account gets its own cloud library.
