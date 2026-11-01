@@ -1,0 +1,6 @@
+{
+  "appId": "com.adithak.cinetrack",
+  "appName": "CineTrack",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
