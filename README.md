@@ -35,3 +35,29 @@ CineTrack uses a Vercel serverless function at `/api/tmdb` so the TMDB Read Acce
 5. Redeploy the project.
 
 The API proxy supports multi-search and movie/TV details. For local development with the serverless function, use Vercel CLI (`vercel dev`) after setting the environment variable. Never commit your real token or put it in a `VITE_*` variable.
+
+
+## Android APK
+
+CineTrack can be packaged as an Android app with Capacitor. GitHub Actions builds a debug APK automatically when the Android app source/configuration changes, or when you manually run the **Build CineTrack Android APK** workflow.
+
+### Configure the TMDB API endpoint for the APK
+
+The Android app bundles the interface, while TMDB requests are sent to the Vercel serverless API so the secret TMDB token stays server-side.
+
+In GitHub, open **Settings → Secrets and variables → Actions → Variables → New repository variable** and add:
+
+- Name: `CINETRACK_API_URL`
+- Value: your deployed Vercel project URL, for example `https://your-project.vercel.app` (no trailing slash)
+
+The Vercel project must also have the `TMDB_READ_ACCESS_TOKEN` environment variable configured.
+
+### Download the APK
+
+1. Open the repository's **Actions** tab.
+2. Select **Build CineTrack Android APK**.
+3. Open the latest successful workflow run.
+4. Under **Artifacts**, download `CineTrack-Android-APK`.
+5. Extract the ZIP and install `app-debug.apk` on your Android phone. Android may ask you to allow installation from that source.
+
+The APK is an unsigned debug build for personal testing, not a Play Store release.
