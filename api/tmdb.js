@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   const token = process.env.TMDB_READ_ACCESS_TOKEN;
   if (!token) return res.status(503).json({ error: 'TMDB is not configured yet. Add TMDB_READ_ACCESS_TOKEN in Vercel project environment variables.' });
-  const { action, query, type, id } = req.query;
+  const { action, query, type, id, season_number } = req.query;
   const headers = { Authorization: 'Bearer ' + token, accept: 'application/json' };
   try {
     let url;
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     } else if (action === 'details') {
       if (!id || !['movie','tv'].includes(type)) return res.status(400).json({ error: 'A valid title type and ID are required.' });
       url = 'https://api.themoviedb.org/3/' + type + '/' + encodeURIComponent(id) + '?language=en-US&append_to_response=credits,videos';
-    } else return res.status(400).json({ error: 'Unknown TMDB action.' });
+    } else if (action === 'season') { if (!id || type !== 'tv' || !season_number) return res.status(400).json({ error: 'A valid TV ID and season number are required.' }); url = 'https://api.themoviedb.org/3/tv/' + encodeURIComponent(id) + '/season/' + encodeURIComponent(season_number) + '?language=en-US'; } else return res.status(400).json({ error: 'Unknown TMDB action.' });
     const response = await fetch(url, { headers });
     const data = await response.json();
     if (!response.ok) return res.status(response.status).json({ error: data.status_message || 'TMDB request failed.' });
