@@ -13,7 +13,7 @@ export default async function handler(req, res) {
       url = 'https://api.themoviedb.org/3/search/multi?query=' + encodeURIComponent(query) + '&include_adult=false&language=en-US&page=1';
     } else if (action === 'details') {
       if (!id || !['movie','tv'].includes(type)) return res.status(400).json({ error: 'A valid title type and ID are required.' });
-      url = 'https://api.themoviedb.org/3/' + type + '/' + encodeURIComponent(id) + '?language=en-US';
+      url = 'https://api.themoviedb.org/3/' + type + '/' + encodeURIComponent(id) + '?language=en-US&append_to_response=credits,videos';
     } else return res.status(400).json({ error: 'Unknown TMDB action.' });
     const response = await fetch(url, { headers });
     const data = await response.json();
